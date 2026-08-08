@@ -130,7 +130,10 @@ export class Engine {
   }
 
   async discover(): Promise<{ found: Discovered[]; suggestion: ReturnType<typeof suggestPanel> }> {
-    const found = await discoverSeats({ relayConnected: this.relay?.connected() ?? false });
+    const found = await discoverSeats({
+      relayConnected: this.relay?.connected() ?? false,
+      pack: this.pack,
+    });
     return { found, suggestion: suggestPanel(found) };
   }
 

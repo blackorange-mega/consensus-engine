@@ -4,7 +4,7 @@ import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { promisify } from 'node:util';
 
-import type { AdapterKind, SeatConfig } from '@consensus/shared';
+import type { AdapterKind, DescriptorPack, SeatConfig } from '@consensus/shared';
 
 import { logger } from '../util/logger.js';
 
@@ -82,12 +82,18 @@ const ON_DEVICE_RUNTIMES: Array<{ id: string; name: string; port: number; path: 
   { id: 'koboldcpp', name: 'KoboldCpp', port: 5001, path: '/v1/models', note: 'KoboldCpp is running' },
 ];
 
-const RELAY_PROVIDERS = [
-  { id: 'chatgpt-web', name: 'ChatGPT (browser)', provider: 'chatgpt' },
-  { id: 'claude-web', name: 'Claude (browser)', provider: 'claude' },
-  { id: 'gemini-web', name: 'Gemini (browser)', provider: 'gemini' },
-  { id: 'grok-web', name: 'Grok (browser)', provider: 'grok' },
-];
+/**
+ * Browser-relay and CDP seats are proposed straight from the descriptor pack.
+ *
+ * A hardcoded list here would drift the moment the pack gained a provider —
+ * which it already had: the pack shipped a working DeepSeek descriptor that
+ * discovery never offered, so the seat existed but could only be reached by
+ * hand-editing seats.json. Reading the pack also means a hot descriptor update
+ * adds its providers to discovery without a new build.
+ */
+function relayProvidersFrom(pack: DescriptorPack | undefined): Array<{ provider: string; name: string }> {
+  return (pack?.descriptors ?? []).map((d) => ({ provider: d.provider, name: d.displayName }));
+}
 
 function desktopAppPaths(): Array<{ id: string; name: string; app: string; paths: string[] }> {
   const home = homedir();
@@ -120,10 +126,13 @@ function desktopAppPaths(): Array<{ id: string; name: string; app: string; paths
 export interface DiscoveryOptions {
   /** True when the relay extension is currently paired. */
   relayConnected: boolean;
+  /** The live descriptor pack; every provider in it becomes an offerable seat. */
+  pack?: DescriptorPack;
 }
 
 export async function discoverSeats(opts: DiscoveryOptions): Promise<Discovered[]> {
   const found: Discovered[] = [];
+  const relayProviders = relayProvidersFrom(opts.pack);
 
   // --- CLI seats: deterministic, subscription-backed, no UI fragility -------
   await Promise.all(
@@ -205,11 +214,11 @@ export async function discoverSeats(opts: DiscoveryOptions): Promise<Discovered[
       | { Browser?: string }
       | null;
     if (!version?.Browser) continue;
-    for (const { id, name, provider } of RELAY_PROVIDERS) {
+    for (const { name, provider } of relayProviders) {
       found.push({
         seat: {
           id: `${provider}-cdp`,
-          displayName: `${name.replace('(browser)', '(CDP)')}`,
+          displayName: `${name} (CDP)`,
           adapter: 'cdp',
           enabled: false,
           options: { provider, port },
@@ -239,11 +248,11 @@ export async function discoverSeats(opts: DiscoveryOptions): Promise<Discovered[
   }
 
   // --- Browser relay seats -------------------------------------------------
-  for (const { id, name, provider } of RELAY_PROVIDERS) {
+  for (const { name, provider } of relayProviders) {
     found.push({
       seat: {
-        id,
-        displayName: name,
+        id: `${provider}-web`,
+        displayName: `${name} (browser)`,
         adapter: 'relay',
         enabled: false,
         options: { provider, freshThreadPerCall: true },
@@ -294,7 +303,19 @@ export function suggestPanel(found: Discovered[]): { seats: SeatConfig[]; warnin
   }
 
   const picked: SeatConfig[] = [];
-  for (const preferred of ['cli', 'ollama', 'lmstudio', 'anthropic', 'openai', 'google'] as AdapterKind[]) {
+  // Unmetered and subscription-backed first, then keys. OpenRouter is last of
+  // the API options but must be here: it is the setup the bring-up guide
+  // recommends, and leaving it out meant a user whose only key was
+  // OPENROUTER_API_KEY got it discovered and then never proposed.
+  for (const preferred of [
+    'cli',
+    'ollama',
+    'lmstudio',
+    'anthropic',
+    'openai',
+    'google',
+    'openrouter',
+  ] as AdapterKind[]) {
     for (const cand of byFamily.get(preferred) ?? []) {
       if (picked.length >= 4) break;
       picked.push({ ...cand.seat, enabled: true });
