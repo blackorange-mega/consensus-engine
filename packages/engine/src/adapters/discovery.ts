@@ -21,7 +21,7 @@ const log = logger('discovery');
 export interface Discovered {
   seat: SeatConfig;
   detail: string;
-  /** Free/unmetered seats are the ones worth spending extra rounds on (4.4b). */
+  /** Free/unmetered seats are the ones worth spending extra rounds on. */
   unmetered: boolean;
 }
 
@@ -67,9 +67,9 @@ const API_SEATS: Array<{ id: string; name: string; adapter: AdapterKind; env: st
  * well-known localhost port.
  *
  * These matter more than their obscurity suggests: subscription quota is the
- * binding constraint on this whole app, and an
- * unmetered local seat absorbing the extra debate rounds is what turns "six
- * runs before you are locked out" into "as many as you like".
+ * binding constraint on this whole app, and an unmetered local seat absorbing
+ * the extra debate rounds is what turns "six runs before you are locked out"
+ * into "as many as you like".
  */
 const ON_DEVICE_RUNTIMES: Array<{ id: string; name: string; port: number; path: string; note: string }> = [
   { id: 'lmstudio', name: 'LM Studio', port: 1234, path: '/v1/models', note: 'LM Studio server is running' },

@@ -40,11 +40,11 @@ export const FAMILY_OF: Record<AdapterKind, TransportFamily> = {
   desktop: 'desktop',
 };
 
-/** Declared per adapter so the orchestrator can degrade gracefully (4.7). */
+/** Declared per adapter so the orchestrator can degrade gracefully. */
 export interface Capabilities {
   /** Can we show tokens live. */
   streaming: boolean;
-  /** Can we obtain source markdown rather than rendered DOM (5.3B). */
+  /** Can we obtain source markdown rather than rendered DOM. */
   rawCopy: boolean;
   /** Can we force a fresh conversation per round. */
   newThread: boolean;
@@ -124,7 +124,7 @@ export interface SeatHealth {
   /** Messages consumed, for the quota meter. */
   usage: { run: number; day: number };
   quotaHint?: string;
-  /** Set when the seat's extraction path is known to be lossy (5.3B). */
+  /** Set when the seat's extraction path is known to be lossy. */
   lossy?: boolean;
 }
 
@@ -158,7 +158,7 @@ export interface Verdict {
   confidence?: number;
 }
 
-/** How the verdict was recovered, in the parser's preference order (4.1). */
+/** How the verdict was recovered, in the parser's preference order. */
 export type ParseSource =
   | 'verdict_fence'
   | 'bare_json'
@@ -204,13 +204,13 @@ export interface SeatTurn {
   /** Extracted prose answer after this turn. */
   answer?: string;
   answerKey?: string;
-  /** Hash of the normalised answer key, for oscillation detection (4.3). */
+  /** Hash of the normalised answer key, for oscillation detection. */
   answerHash?: string;
   latencyMs: number;
   tokens?: { in?: number; out?: number };
   costUsd?: number;
   failure?: { reason: SeatFailureReason; detail?: string };
-  /** True when extraction had to fall back to a de-rendered DOM read (5.3B). */
+  /** True when extraction had to fall back to a de-rendered DOM read. */
   lossy?: boolean;
   startedAt: number;
   finishedAt: number;
@@ -283,7 +283,7 @@ export interface RunSettings {
   callTimeoutMs: number;
   /** Semi mode: auto until this round, then hand over. */
   handoverRound?: number;
-  /** Ask every model to restate the agreed answer once converged (2.5). */
+  /** Ask every model to restate the agreed answer once converged. */
   finalRewrite: boolean;
   /** Show only the primary seat's final answer instead of all of them. */
   showOnlyPrimary: boolean;
@@ -320,9 +320,9 @@ export const DEFAULT_RUN_SETTINGS: RunSettings = {
 
 export interface RoundRecord {
   round: number;
-  /** Letter assignment for this round; shuffled every round (2, note 1). */
+  /** Letter assignment for this round; shuffled every round. */
   letters: Record<string, string>;
-  /** seatId -> seatIds that still consider it wrong. Drives pruning (2.3). */
+  /** seatId -> seatIds that still consider it wrong. Drives pruning. */
   critics: Record<string, string[]>;
   /** Hash of the normalised answer multiset, for oscillation detection. */
   stateHash: string;
@@ -379,10 +379,10 @@ export interface RunSeatState {
   adapter: AdapterKind;
   family: TransportFamily;
   status: SeatStatus;
-  /** Last known answer, retained and displayed even after a drop (3.2 item 3). */
+  /** Last known answer, retained and displayed even after a drop. */
   answer: string | null;
   answerKey: string | null;
-  /** How many times this seat changed its answer. Capitulation signal (4.2). */
+  /** How many times this seat changed its answer. Capitulation signal. */
   flips: number;
   /** Rounds in which this seat voted agree. */
   agreedRounds: number[];
@@ -467,7 +467,7 @@ export interface PreflightEstimate {
 
 /* ------------------------------------------------------------- scoreboard */
 
-/** Lifetime per-model accuracy, built from the user's own questions (3.2.5). */
+/** Lifetime per-model accuracy, built from the user's own questions. */
 export interface ScoreboardEntry {
   seatId: string;
   displayName: string;
@@ -480,7 +480,7 @@ export interface ScoreboardEntry {
   persuaded: number;
   /** Changed its own answer. */
   flips: number;
-  /** Right in round 1, wrong at convergence. The sycophancy counter (4.2). */
+  /** Right in round 1, wrong at convergence. The sycophancy counter. */
   talkedOutOfCorrect: number;
   withdrawals: number;
   nonCompliant: number;

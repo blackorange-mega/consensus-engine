@@ -58,7 +58,7 @@ export interface ModelAdapter {
   dispose?(): Promise<void>;
 }
 
-/** Every adapter failure is classified; "it just didn't answer" is not a reason (5.3A). */
+/** Every adapter failure is classified; "it just didn't answer" is not a reason. */
 export class AdapterError extends Error {
   constructor(
     public readonly reason: SeatFailureReason,

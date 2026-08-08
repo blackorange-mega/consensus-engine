@@ -44,9 +44,9 @@ export interface RelayOptions {
  * It drives the user's real, already-authenticated browser session, so a panel
  * seat is a live ChatGPT/Claude/Gemini/Grok subscription rather than an API
  * key. That combination — a deliberation protocol seated on the user's own
- * logged-in sessions — is the single strongest claim this app has (3.2 item 1).
+ * logged-in sessions — is the single strongest claim this app has.
  *
- * Critically this is a TRANSPORT, not an agent (5.1). It delivers an exact
+ * Critically this is a TRANSPORT, not an agent. It delivers an exact
  * string and retrieves an exact string. No model decides what to click; the
  * action set is fixed and enumerable, and the descriptors only say where the
  * fixed actions apply.
@@ -72,7 +72,7 @@ export class RelayAdapter implements ModelAdapter {
       rawCopy: descriptor?.assumptions.copyYieldsMarkdown === 'verified',
       newThread: true,
       // One conversation at a time per provider account: four sites at once is
-      // fine, four concurrent chats on one account is how you trip limits (5.2).
+      // fine, four concurrent chats on one account is how you trip limits.
       concurrent: false,
       systemPrompt: false,
       temperature: false,
@@ -105,7 +105,7 @@ export class RelayAdapter implements ModelAdapter {
     }
 
     // Keep one tab per seat warm across rounds; page loads are the slowest and
-    // most failure-prone step (5.2).
+    // most failure-prone step.
     await this.act({ kind: 'ensureTab', provider: this.opts.provider, url: descriptor.newThreadUrl }, 45_000);
 
     if (opts.newThread || this.opts.freshThreadPerCall) {
@@ -113,12 +113,12 @@ export class RelayAdapter implements ModelAdapter {
     }
 
     // Human-plausible pacing: this is about not tripping abuse heuristics on the
-    // user's own account, not about defeating them (5.2).
+    // user's own account, not about defeating them.
     const pause = jitter(descriptor.pacingMs);
     if (pause > 0) await new Promise((r) => setTimeout(r, pause));
 
     // `verifyEcho` makes the extension read the composer back and refuse to
-    // submit unless it matches the source string byte-for-byte (4.6, 5.2).
+    // submit unless it matches the source string byte-for-byte.
     await this.act({ kind: 'send', provider: this.opts.provider, text: prompt, verifyEcho: true }, 60_000);
 
     const result = await this.act(

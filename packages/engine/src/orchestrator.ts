@@ -725,7 +725,7 @@ export class RunExecution {
     // it from the run before it has answered anything.
     const countsAgainstBudget = kind !== 'classify';
 
-    // Quota exhaustion is a normal circuit-breaker drop, not an error (4.4b).
+    // Quota exhaustion is a normal circuit-breaker drop, not an error.
     if (countsAgainstBudget) {
       const budget = this.deps.ledger.check(seat, this.record.settings);
       if (!budget.ok) {

@@ -50,7 +50,7 @@ export async function withTimeout<T>(p: Promise<T>, ms: number, onTimeout?: () =
   }
 }
 
-/** Randomised delay inside a window. Used for human-plausible send pacing (5.2). */
+/** Randomised delay inside a window. Used for human-plausible send pacing. */
 export function jitter([lo, hi]: [number, number]): number {
   return Math.floor(lo + Math.random() * Math.max(0, hi - lo));
 }
@@ -113,7 +113,7 @@ export async function pool<T>(
   return results;
 }
 
-/** A mutex. The clipboard is a single global resource; parallel seats must not race for it (5.3B). */
+/** A mutex. The clipboard is a single global resource; parallel seats must not race for it. */
 export class Mutex {
   private queue: Array<() => void> = [];
   private locked = false;

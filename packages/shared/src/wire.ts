@@ -107,7 +107,7 @@ export type RelayResponse =
       ok: true;
       /** Byte-exact source text, ideally from the provider's own copy button. */
       text: string;
-      /** True when we had to fall back to a de-rendered DOM read (5.3B). */
+      /** True when we had to fall back to a de-rendered DOM read. */
       lossy: boolean;
       /** Which extraction path actually produced the text. */
       via: ExtractionPath;

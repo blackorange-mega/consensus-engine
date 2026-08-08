@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS run_seats (
   PRIMARY KEY (run_id, seat_id)
 );
 
--- Lifetime per-model accuracy, built from the user's own questions (3.2 item 5).
+-- Lifetime per-model accuracy, built from the user's own questions.
 CREATE TABLE IF NOT EXISTS scoreboard (
   seat_id              TEXT PRIMARY KEY,
   display_name         TEXT NOT NULL,

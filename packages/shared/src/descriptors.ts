@@ -20,7 +20,7 @@ export interface SelectorList {
 export interface CompletionSignals {
   /**
    * The strongest and most portable signal: the stop/abort button reverting
-   * to the send button (5.3A).
+   * to the send button.
    */
   stopButton: SelectorList;
   /** Post-completion action row (copy / regenerate / thumbs) appearing. */
@@ -47,7 +47,7 @@ export interface SiteDescriptor {
   /** Stable provider id, e.g. "chatgpt". */
   provider: string;
   displayName: string;
-  /** Exact origins the relay is permitted to touch for this provider (5.5). */
+  /** Exact origins the relay is permitted to touch for this provider. */
   origins: string[];
   /** Where to open a fresh conversation. */
   newThreadUrl: string;
@@ -55,7 +55,7 @@ export interface SiteDescriptor {
   sendButton: SelectorList;
   /** The last assistant message container. */
   responseContainer: SelectorList;
-  /** The provider's own copy button -- the non-lossy extraction path (5.3B). */
+  /** The provider's own copy button -- the non-lossy extraction path. */
   copyButton: SelectorList;
   /** Optional: a network route the page itself calls, for a lossless read. */
   jsonEndpointPattern?: string;
