@@ -32,8 +32,12 @@ const CONCEDE_TOKEN = '-O-';
  */
 export function stripQuotedRegions(raw: string, nonce?: string): string {
   if (!nonce) return raw;
+  // Today's nonce is hex, but this builds a pattern out of it inside the
+  // injection defence — escape it so a future nonce format can never turn a
+  // metacharacter into part of the pattern.
+  const safeNonce = nonce.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const re = new RegExp(
-    `<<<[A-Z_]+\\s+nonce=${nonce}[\\s\\S]*?END\\s+[A-Z_]+\\s+nonce=${nonce}>>>`,
+    `<<<[A-Z_]+\\s+nonce=${safeNonce}[\\s\\S]*?END\\s+[A-Z_]+\\s+nonce=${safeNonce}>>>`,
     'g',
   );
   return raw.replace(re, '\n[quoted peer content removed before parsing]\n');

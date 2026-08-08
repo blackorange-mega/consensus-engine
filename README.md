@@ -351,6 +351,10 @@ mkdir -p .data && cp examples/seats.openrouter.json .data/seats.json
 ## Commands
 
 ```bash
+npm run dev             # engine and UI together, in one terminal
+```
+
+```bash
 npm run dev:engine      # engine + API on 127.0.0.1:8787
 ```
 

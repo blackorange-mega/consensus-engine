@@ -14,15 +14,15 @@
     "packages/ui"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace @consensus/engine & npm run dev --workspace @consensus/ui",
+    "dev": "node scripts/dev.mjs",
     "dev:engine": "npm run dev --workspace @consensus/engine",
     "dev:ui": "npm run dev --workspace @consensus/ui",
     "build": "npm run build --workspace @consensus/shared && npm run build --workspace @consensus/engine && npm run build --workspace @consensus/ui",
     "start": "npm run start --workspace @consensus/engine",
-    "test": "npm run test --workspace @consensus/engine",
+    "test": "npm run test --workspace @consensus/engine --",
     "typecheck": "tsc -b packages/shared packages/engine",
-    "eval": "npm run eval --workspace @consensus/engine",
-    "conformance": "npm run conformance --workspace @consensus/engine"
+    "eval": "npm run eval --workspace @consensus/engine --",
+    "conformance": "npm run conformance --workspace @consensus/engine --"
   },
   "devDependencies": {
     "typescript": "^5.6.3"

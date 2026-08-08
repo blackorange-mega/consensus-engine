@@ -5,7 +5,7 @@
   "type": "module",
   "main": "./dist/index.js",
   "scripts": {
-    "dev": "node --import tsx --watch src/main.ts",
+    "dev": "node --import tsx --watch --watch-path=./src src/main.ts",
     "start": "node --import tsx src/main.ts",
     "build": "tsc -b",
     "test": "vitest run",

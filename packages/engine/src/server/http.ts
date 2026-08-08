@@ -27,6 +27,66 @@ const MIME: Record<string, string> = {
   '.ico': 'image/x-icon',
 };
 
+const LOOPBACK_HOSTNAMES = new Set(['127.0.0.1', 'localhost', '::1', '[::1]']);
+
+/**
+ * True when the engine is bound to loopback, and can therefore insist that
+ * callers are local too. When the user has deliberately bound it wider for the
+ * phone path there is no allow-list to check against, so the guard steps aside
+ * and the startup warning is the control instead.
+ */
+const LOOPBACK_ONLY = LOOPBACK_HOSTNAMES.has(CONFIG.host);
+
+function isLoopbackPeer(remoteAddress: string | undefined): boolean {
+  return remoteAddress === '127.0.0.1' || remoteAddress === '::1' || remoteAddress === '::ffff:127.0.0.1';
+}
+
+function hostnameOf(hostHeader: string): string {
+  // "[::1]:8787" -> "[::1]";  "127.0.0.1:8787" -> "127.0.0.1"
+  if (hostHeader.startsWith('[')) return hostHeader.slice(0, hostHeader.indexOf(']') + 1);
+  return hostHeader.split(':')[0] ?? '';
+}
+
+/**
+ * Reject requests that a local-first engine has no business accepting.
+ *
+ * This matters more here than on a normal server. A WebSocket is not subject to
+ * CORS at all, so without this any page the user happens to be visiting could
+ * open `ws://127.0.0.1:8787/ws` and read every prompt and answer as it streams.
+ * And because the API accepts a JSON body regardless of content type, a
+ * `text/plain` POST — a CORS "simple request", so no preflight to fail — could
+ * start runs inside the user's logged-in sessions from any origin.
+ *
+ * The rules, applied only while bound to loopback:
+ *   - the peer must be loopback (defeats anything off-machine);
+ *   - a browser `Origin`, when present, must itself be loopback (defeats the
+ *     malicious-page cases above);
+ *   - the `Host` header must be loopback (defeats DNS rebinding, where the
+ *     attacker's domain resolves to 127.0.0.1 and no Origin is sent).
+ *
+ * A missing `Origin` is allowed: browsers always send one on cross-origin
+ * requests, so its absence means a non-browser caller — curl, the dev proxy.
+ */
+export function isRequestAllowed(req: {
+  headers: { origin?: string | undefined; host?: string | undefined };
+  socket: { remoteAddress?: string | undefined };
+}): boolean {
+  if (!LOOPBACK_ONLY) return true;
+
+  if (!isLoopbackPeer(req.socket.remoteAddress)) return false;
+
+  const host = req.headers.host;
+  if (host !== undefined && !LOOPBACK_HOSTNAMES.has(hostnameOf(host))) return false;
+
+  const origin = req.headers.origin;
+  if (origin === undefined) return true;
+  try {
+    return LOOPBACK_HOSTNAMES.has(new URL(origin).hostname);
+  } catch {
+    return false; // opaque origin ("null"), or unparseable
+  }
+}
+
 function send(res: ServerResponse, status: number, body: unknown, headers: Record<string, string> = {}): void {
   const payload = typeof body === 'string' ? body : JSON.stringify(body);
   res.writeHead(status, {
@@ -72,6 +132,18 @@ export function startServer(engine: Engine): Server {
   server.on('upgrade', (req, socket, head) => {
     const url = new URL(req.url ?? '/', 'http://127.0.0.1');
     if (url.pathname !== '/ws') return; // /relay is handled by RelayServer
+
+    // A WebSocket is exempt from CORS, so this is the only thing standing
+    // between a page the user is visiting and the live run event stream.
+    if (!isRequestAllowed(req)) {
+      log.warn(
+        `refused an event-stream connection from origin "${req.headers.origin ?? 'none'}" ` +
+          `at ${req.socket.remoteAddress}`,
+      );
+      socket.destroy();
+      return;
+    }
+
     wss.handleUpgrade(req, socket, head, (ws) => {
       ws.send(JSON.stringify({ type: 'hello', engineVersion: ENGINE_VERSION, killSwitch: killSwitch.isEngaged }));
       const unsubscribe = engine.subscribe((event) => {
@@ -83,6 +155,30 @@ export function startServer(engine: Engine): Server {
   });
 
   engine.attachRelay(server);
+
+  /**
+   * A failed bind arrives as an `error` event, and an unhandled one takes the
+   * process down. That is worth catching rather than crashing: under
+   * `--watch` the replacement process regularly starts before the outgoing one
+   * has released the port, and a crash there ends the watch session entirely.
+   * So retry briefly, then say something useful instead of a raw stack trace.
+   */
+  let bindAttempts = 0;
+  server.on('error', (err: NodeJS.ErrnoException) => {
+    if (err.code !== 'EADDRINUSE') {
+      log.error(`server error: ${err.message}`);
+      return;
+    }
+    if (++bindAttempts <= 10) {
+      setTimeout(() => server.listen(CONFIG.port, CONFIG.host), 250).unref();
+      return;
+    }
+    log.error(
+      `port ${CONFIG.port} is still in use after ${bindAttempts} attempts. ` +
+        'Another Consensus Engine is probably already running — stop it, or set CONSENSUS_PORT to a free port.',
+    );
+    process.exitCode = 1;
+  });
 
   server.listen(CONFIG.port, CONFIG.host, () => {
     log.info(`engine listening on http://${CONFIG.host}:${CONFIG.port}`);
@@ -104,6 +200,11 @@ async function handle(engine: Engine, req: IncomingMessage, res: ServerResponse)
 
   // The UI is same-origin; no cross-origin caller has any business here.
   res.setHeader('x-content-type-options', 'nosniff');
+
+  if (!isRequestAllowed(req)) {
+    log.warn(`refused ${method} ${path} from origin "${req.headers.origin ?? 'none'}" at ${req.socket.remoteAddress}`);
+    return send(res, 403, { error: 'this engine only accepts requests from the local machine' });
+  }
 
   if (!path.startsWith('/api/')) return serveStatic(path, res);
 
