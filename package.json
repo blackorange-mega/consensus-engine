@@ -1,0 +1,30 @@
+{
+  "name": "consensus-engine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local-first multi-LLM cross-verification engine",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "workspaces": [
+    "packages/shared",
+    "packages/engine",
+    "packages/ui"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace @consensus/engine & npm run dev --workspace @consensus/ui",
+    "dev:engine": "npm run dev --workspace @consensus/engine",
+    "dev:ui": "npm run dev --workspace @consensus/ui",
+    "build": "npm run build --workspace @consensus/shared && npm run build --workspace @consensus/engine && npm run build --workspace @consensus/ui",
+    "start": "npm run start --workspace @consensus/engine",
+    "test": "npm run test --workspace @consensus/engine",
+    "typecheck": "tsc -b packages/shared packages/engine",
+    "eval": "npm run eval --workspace @consensus/engine",
+    "conformance": "npm run conformance --workspace @consensus/engine"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}

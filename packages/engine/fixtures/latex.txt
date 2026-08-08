@@ -1,0 +1,14 @@
+Show that for all $n \in \mathbb{N}$, $\sum_{k=1}^{n} k = \frac{n(n+1)}{2}$.
+
+Recall the Gaussian integral $\int_{-\infty}^{\infty} e^{-x^2}\,dx = \sqrt{\pi}$,
+and the identity $\left\| A \right\|_F^2 = \operatorname{tr}(A^\top A)$.
+
+$$
+\begin{aligned}
+  \mathcal{L}(\theta) &= -\frac{1}{N}\sum_{i=1}^{N}\log p_\theta(y_i \mid x_i) \\
+  \nabla_\theta \mathcal{L} &= -\frac{1}{N}\sum_{i=1}^{N}\nabla_\theta \log p_\theta(y_i \mid x_i)
+\end{aligned}
+$$
+
+Inline edge cases: \\ (a literal double backslash), \{braces\}, 100\% of cases,
+a\_b subscript escape, and $x^{2^{n}}$ with nested superscripts.

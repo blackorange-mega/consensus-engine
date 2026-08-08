@@ -1,0 +1,35 @@
+[
+  {
+    "id": "gpt",
+    "displayName": "GPT (OpenAI)",
+    "adapter": "openrouter",
+    "enabled": true,
+    "primary": true,
+    "options": { "model": "openai/gpt-4o-mini", "apiKeyEnv": "OPENROUTER_API_KEY", "temperature": 0 },
+    "budget": { "perRun": 12, "perDay": 400 }
+  },
+  {
+    "id": "claude",
+    "displayName": "Claude (Anthropic)",
+    "adapter": "openrouter",
+    "enabled": true,
+    "options": { "model": "anthropic/claude-3.5-haiku", "apiKeyEnv": "OPENROUTER_API_KEY", "temperature": 0 },
+    "budget": { "perRun": 12, "perDay": 400 }
+  },
+  {
+    "id": "gemini",
+    "displayName": "Gemini (Google)",
+    "adapter": "openrouter",
+    "enabled": true,
+    "options": { "model": "google/gemini-flash-1.5", "apiKeyEnv": "OPENROUTER_API_KEY", "temperature": 0 },
+    "budget": { "perRun": 12, "perDay": 400 }
+  },
+  {
+    "id": "llama",
+    "displayName": "Llama (Meta)",
+    "adapter": "openrouter",
+    "enabled": true,
+    "options": { "model": "meta-llama/llama-3.3-70b-instruct", "apiKeyEnv": "OPENROUTER_API_KEY", "temperature": 0 },
+    "budget": { "perRun": 12, "perDay": 400 }
+  }
+]

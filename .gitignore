@@ -1,0 +1,21 @@
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+.data/
+data/
+*.sqlite
+*.sqlite-journal
+*.db
+.env
+.env.local
+.DS_Store
+Thumbs.db
+coverage/
+eval-results/
+.claude/
+packages/*/tsconfig.tsbuildinfo
+
+# authoring scaffolding, not part of the product
+PROMPT_EN.md
+prompt.docx

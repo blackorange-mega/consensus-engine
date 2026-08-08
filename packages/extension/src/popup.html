@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Consensus Engine Relay</title>
+    <style>
+      :root { color-scheme: dark; }
+      body {
+        width: 320px;
+        margin: 0;
+        padding: 14px;
+        font: 13px/1.5 ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
+        background: #0b0d10;
+        color: #e6e8eb;
+      }
+      h1 { font-size: 13px; margin: 0 0 10px; letter-spacing: .02em; }
+      label { display: block; margin: 10px 0 4px; color: #9aa4b2; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
+      input {
+        width: 100%; box-sizing: border-box; padding: 7px 8px;
+        background: #14171c; border: 1px solid #262b33; border-radius: 6px; color: #e6e8eb;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px;
+      }
+      button {
+        margin-top: 12px; width: 100%; padding: 8px;
+        background: #1f6feb; border: 0; border-radius: 6px; color: #fff; font-weight: 600; cursor: pointer;
+      }
+      button:hover { background: #2c7cf5; }
+      .row { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+      .dot { width: 8px; height: 8px; border-radius: 50%; background: #6b7280; flex: none; }
+      .dot.on { background: #16a34a; }
+      .dot.off { background: #dc2626; }
+      .muted { color: #6b7280; font-size: 11px; margin-top: 10px; }
+      code { background: #14171c; padding: 1px 4px; border-radius: 3px; }
+    </style>
+  </head>
+  <body>
+    <h1>Consensus Engine Relay</h1>
+
+    <div class="row">
+      <span class="dot" id="dot"></span>
+      <span id="status">checking…</span>
+    </div>
+
+    <label for="engine">Engine WebSocket</label>
+    <input id="engine" spellcheck="false" placeholder="ws://127.0.0.1:8787/relay" />
+
+    <label for="token">Pairing token</label>
+    <input id="token" spellcheck="false" placeholder="paste the token the engine printed" />
+
+    <button id="save">Save and reconnect</button>
+
+    <p class="muted">
+      The engine prints the pairing token on startup, and stores it at
+      <code>.data/relay-token</code>. The relay only ever connects to
+      <code>127.0.0.1</code> and only acts on the provider origins the descriptor
+      pack declares.
+    </p>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

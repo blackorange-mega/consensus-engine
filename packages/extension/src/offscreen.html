@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Consensus Engine Relay — connection host</title>
+  </head>
+  <body>
+    <!--
+      This document exists for exactly one reason: to hold the WebSocket to the
+      local engine.
+
+      An MV3 service worker is terminated after ~30s of inactivity, which
+      discards the socket and detaches every tab mid-run. Chrome 116+ resets the
+      idle timer on WebSocket traffic, but that only helps while traffic is
+      flowing — a run spends minutes waiting for a model to finish generating,
+      which is exactly when the worker dies. An offscreen document is not
+      subject to the service worker lifecycle at all, so the connection
+      survives the quiet stretches.
+    -->
+    <script src="offscreen.js"></script>
+  </body>
+</html>

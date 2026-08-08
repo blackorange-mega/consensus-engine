@@ -1,0 +1,14 @@
+Emoji with skin-tone modifiers: 👍🏽 👋🏿 🤝🏻
+ZWJ sequences that must not be split: 👨‍👩‍👧‍👦 🧑‍💻 🏳️‍🌈 👩🏾‍🚀
+
+Combining marks: e + ́ = é (decomposed), vs é (precomposed). These are
+different strings and must stay different — NFC normalisation would silently
+merge them and that counts as mutating the user's text.
+
+Zero-width joiner: a‍b. Zero-width non-joiner: a‌b. Zero-width space: a​b.
+
+Mathematical alphanumerics: 𝔸 𝕓 ℂ 𝓭. Fullwidth: ＡＢＣ１２３.
+CJK: 漢字、ひらがな、カタカナ、한글.
+Surrogate pairs: 𝄞 𐍈 🜲.
+
+Trailing combining acute on the last character: a

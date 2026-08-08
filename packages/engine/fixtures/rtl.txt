@@ -1,0 +1,10 @@
+این یک پاراگراف فارسی است که باید دقیقاً همان‌طور که هست باقی بماند.
+
+نیم‌فاصله‌ها مهم‌اند: می‌روم، نمی‌دانم، کتاب‌ها، دانشگاه‌های تهران.
+
+اعداد فارسی و لاتین کنار هم: ۱۲۳۴۵ و 12345 و ٪۵۰ و 50%.
+
+A mixed line: the Persian word سلام inside an English sentence, followed by
+punctuation، and an Arabic comma. Then back to English.
+
+Bidi control characters must survive: ‪LRE‬ ‫RLE‬ ‮RLO‬ and the ZWNJ in می‌شود.

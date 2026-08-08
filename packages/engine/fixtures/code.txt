@@ -1,0 +1,21 @@
+Explain what this does and whether it terminates.
+
+````markdown
+Here is a nested fence, which is the part that breaks naive extractors:
+
+```python
+def f(n: int) -> int:
+    """Docstring with a ``double backtick`` and a 'quote'."""
+    while n != 1:
+        n = n // 2 if n % 2 == 0 else 3 * n + 1
+    return n
+```
+````
+
+Inline code with backticks: `` `not a fence` `` and ``` ``triple`` ```.
+
+	A tab-indented line.
+    A four-space-indented line.
+
+Trailing whitespace on the next line is significant:
+End.
